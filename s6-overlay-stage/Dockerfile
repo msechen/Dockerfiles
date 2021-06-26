@@ -6,7 +6,8 @@ FROM alpine:3.11 as build
 WORKDIR /tmp
 RUN  apk add --no-cache \
   curl \
-  gnupg 
+  gnupg \
+  bash 
 
 ARG S6_VERSION
 ARG S6_ARCH
