@@ -25,14 +25,12 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
        curl \
        nano \
        tzdata \
-&& npm install -g pm2 \
 && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
 && echo "Asia/Shanghai" > /etc/timezone \
 && python -m pip install --upgrade pip \
 && pip3 install -i https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt \ 
-&& rm -rf /var/lib/apt/lists/* \
-&& rm -rf /tmp/* \
-&& rm -rf /var/cache/apk/* \
-&& rm -rf /root/.npm \
+&& rm -rf \
+       /tmp/* \
+       /root/.cache
 WORKDIR /root
 ENTRYPOINT ["/init"]
