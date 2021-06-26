@@ -6,7 +6,7 @@ ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     HOME=/root
 COPY --from=arpaulnet/s6-overlay-stage:latest / /
 COPY --from=jdnoob/loop:latest / /
-COPY s6-overlay /
+COPY coscmd/s6-overlay /
 COPY coscmd/requirements.txt  / /
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
     && apk update -f \
