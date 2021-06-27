@@ -36,13 +36,14 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 && chmod 600 /root/.ssh/id_rsa \
 && ssh-keyscan gitee.com > /root/.ssh/known_hosts \
 && git clone -b $JD_SCRIPTS_BRANCH $JD_SCRIPTS_URL $JD_DIR \
-&& pip3 install -i https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt \ 
 && cd $JD_DIR/scripts \
 && npm install \
 && echo "========= 创建软链接 =========" \
 && ln -sf $JD_DIR/upload.sh /usr/local/bin/upload \
 && ln -sf $JD_DIR/jup.sh /usr/local/bin/jup \
 && python -m pip install --upgrade pip \
+&& cd $JD_DIR/cos \
+&& pip3 install -i https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt \ 
 && if [ -d /etc/services.d ]; then \
     rm -rf /etc/services.d; \
     fi \
