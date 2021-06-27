@@ -1,53 +1,74 @@
-FROM python:alpine
-ARG JD_SCRIPTS_URL=git@gitee.com:dockere/env.git
-ARG JD_SCRIPTS_BRANCH=master
+FROM alpine:latest
+ARG REPO=gitee
+ARG REPO_URL=$REPO.com
+ARG JD_SHELL=env
+ARG JD_SHELL_BRANCH=master
+ARG JD_SHELL_HOST=jd_shell_$REPO
+ARG JD_SHELL_KEY="NEED_REPLACE"
+ARG JD_SCRIPTS=env
+ARG JD_SCRIPTS_BRANCH=dev
+ARG JD_SCRIPTS_HOST=jd_scripts_$REPO
 ARG JD_SCRIPTS_KEY="NEED_REPLACE"
+COPY --from=arpaulnet/s6-overlay-stage:latest / /
+COPY --from=jdnoob/loop:latest / /
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     LANG=zh_CN.UTF-8 \
     SHELL=/bin/bash \
     PS1="\u@\h:\w \$ " \
-    JD_DIR=/jd
-COPY --from=arpaulnet/s6-overlay-stage:latest / /
-COPY --from=jdnoob/loop:latest / /
+    JD_DIR=/jd \
+    ENABLE_RESET_REPO_URL=true \
+    JD_SHELL_URL=git@$JD_SHELL_HOST:dockere/$JD_SHELL.git \
+    JD_SCRIPTS_URL=git@$JD_SCRIPTS_HOST:dockere/$JD_SCRIPTS.git
 WORKDIR $JD_DIR
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
+    && echo "========= 安装软件 =========" \
     && apk update -f \
     && apk upgrade \
-    && apk --no-cache add -f bash \
-       gcc \
-       python3-dev \
-       musl-dev \
-       coreutils \
-       diffutils \
-       git \
-       wget \
-       curl \
-       nano \
-       tzdata \
-       perl \
-       openssh-client \
-       nodejs-lts \
-       npm \
-&& ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-&& echo "Asia/Shanghai" > /etc/timezone \
-&& mkdir -p /root/.ssh \
-&& cd /root/.ssh \
-&& echo $JD_SCRIPTS_KEY | perl -pe "{s|_| |g; s|@|\n|g}" > /root/.ssh/id_rsa \
-&& chmod 600 /root/.ssh/id_rsa \
-&& ssh-keyscan gitee.com > /root/.ssh/known_hosts \
-&& git clone -b $JD_SCRIPTS_BRANCH $JD_SCRIPTS_URL $JD_DIR \
-&& cd $JD_DIR/scripts \
-&& npm install \
-&& echo "========= 创建软链接 =========" \
-&& ln -sf $JD_DIR/upload.sh /usr/local/bin/upload \
-&& ln -sf $JD_DIR/jup.sh /usr/local/bin/jup \
-&& python -m pip install --upgrade pip \
-&& cd $JD_DIR/cos \
-&& pip3 install -i https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt \ 
-&& if [ -d /etc/services.d ]; then \
+    && apk --no-cache add -f \
+    bash \
+    coreutils \
+    diffutils \
+    git \
+    wget \
+    curl \
+    nano \
+    tzdata \
+    perl \
+    openssh-client \
+    nodejs-lts \
+    npm \
+    && echo "========= 修改时区 =========" \
+    && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo "Asia/Shanghai" > /etc/timezone \
+    && echo "========= 部署SSH KEY =========" \
+    && mkdir -p /root/.ssh \
+    && cd /root/.ssh \
+    && echo $JD_SHELL_KEY | perl -pe "{s|_| |g; s|@|\n|g}" > /root/.ssh/id_rsa \
+    && chmod 600 /root/.ssh/id_rsa \
+    && ssh-keyscan gitee.com > /root/.ssh/known_hosts \
+    && echo "========= 克隆SHELL程序 =========" \
+    && git config --global pull.ff only \
+    && git clone -b $JD_SHELL_BRANCH $JD_SHELL_URL $JD_DIR \
+    && echo "========= 安装PM2 =========" \
+    && npm install -g pm2 \
+    && echo "========= 创建软链接 =========" \
+    && ln -sf $JD_DIR/jtask.sh /usr/local/bin/jtask \
+    && ln -sf $JD_DIR/jtask.sh /usr/local/bin/otask \
+    && ln -sf $JD_DIR/jtask.sh /usr/local/bin/mtask \
+    && ln -sf $JD_DIR/jup.sh /usr/local/bin/jup \
+    && ln -sf $JD_DIR/jlog.sh /usr/local/bin/jlog \
+    && ln -sf $JD_DIR/jcode.sh /usr/local/bin/jcode \
+    && ln -sf $JD_DIR/jcsv.sh /usr/local/bin/jcsv \
+    && ln -sf $JD_DIR/bot/k.sh /usr/local/bin/key \
+    && ln -sf $JD_DIR/bot/upload.sh /usr/local/bin/upload \
+    && if [ -d /etc/cont-init.d ]; then \
+    rm -rf /etc/cont-init.d; \
+    fi \
+    && if [ -d /etc/services.d ]; then \
     rm -rf /etc/services.d; \
     fi \
-&& ln -sf $JD_DIR/s6-overlay/etc/services.d /etc/services.d \
-&& echo "========= 清理 =========" \
-&& rm -rf /root/.npm /var/cache/apk/*
+    && ln -sf $JD_DIR/s6-overlay/etc/cont-init.d /etc/cont-init.d \
+    && ln -sf $JD_DIR/s6-overlay/etc/services.d /etc/services.d \
+    && echo "========= 清理 =========" \
+    && rm -rf /root/.npm /var/cache/apk/*
 ENTRYPOINT ["/init"]
