@@ -14,8 +14,8 @@ COPY coscmd/s6-overlay /
 COPY coscmd/requirements.txt  / /
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
     && apk update -f \
-    && apk --no-cache add -f \
-       bash \
+    && apk upgrade \
+    && apk --no-cache add -f bash \
        nodejs-current \
        npm \
        gcc \
