@@ -35,7 +35,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 && echo $JD_SCRIPTS_KEY | perl -pe "{s|_| |g; s|@|\n|g}" > /root/.ssh/id_rsa \
 && chmod 600 /root/.ssh/id_rsa \
 && ssh-keyscan gitee.com > /root/.ssh/known_hosts \
-&& git clone -b $JD_BASE_BRANCH $JD_BASE_URL $JD_DIR \
+ && git clone -b $JD_SCRIPTS_BRANCH $JD_SCRIPTS_URL $JD_DIR \
 && cd $JD_DIR/scripts \
 && npm install \
 && echo "========= 创建软链接 =========" \
