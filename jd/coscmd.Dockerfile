@@ -1,13 +1,7 @@
 FROM alpine:latest
-ARG REPO=gitee
-ARG REPO_URL=$REPO.com
-ARG JD_SHELL=env
 ARG JD_SHELL_BRANCH=master
-ARG JD_SHELL_HOST=REPO_URL
 ARG JD_SHELL_KEY="NEED_REPLACE"
-ARG JD_SCRIPTS=env
 ARG JD_SCRIPTS_BRANCH=dev
-ARG JD_SCRIPTS_HOST=REPO_URL
 ARG JD_SCRIPTS_KEY="NEED_REPLACE"
 COPY --from=arpaulnet/s6-overlay-stage:latest / /
 COPY --from=jdnoob/loop:latest / /
@@ -17,8 +11,8 @@ ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     PS1="\u@\h:\w \$ " \
     JD_DIR=/jd \
     ENABLE_RESET_REPO_URL=true \
-    JD_SHELL_URL=git@$JD_SHELL_HOST:dockere/$JD_SHELL.git \
-    JD_SCRIPTS_URL=git@$JD_SCRIPTS_HOST:dockere/$JD_SCRIPTS.git
+    JD_SHELL_URL=git@gitee.com:dockere/env.git \
+    JD_SCRIPTS_URL=git@gitee.com:dockere/env.git
 WORKDIR $JD_DIR
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
     && echo "========= 安装软件 =========" \
