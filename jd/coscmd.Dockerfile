@@ -1,7 +1,13 @@
 FROM alpine:latest
+ARG REPO=gitee
+ARG REPO_URL=$REPO.com
+ARG JD_SHELL=env
 ARG JD_SHELL_BRANCH=master
+ARG JD_SHELL_HOST=jd_shell_$REPO
 ARG JD_SHELL_KEY="NEED_REPLACE"
+ARG JD_SCRIPTS=env
 ARG JD_SCRIPTS_BRANCH=dev
+ARG JD_SCRIPTS_HOST=jd_scripts_$REPO
 ARG JD_SCRIPTS_KEY="NEED_REPLACE"
 COPY --from=arpaulnet/s6-overlay-stage:latest / /
 COPY --from=jdnoob/loop:latest / /
@@ -11,8 +17,8 @@ ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     PS1="\u@\h:\w \$ " \
     JD_DIR=/jd \
     ENABLE_RESET_REPO_URL=true \
-    JD_SHELL_URL=git@gitee.com:dockere/env.git \
-    JD_SCRIPTS_URL=git@gitee.com:dockere/env.git
+    JD_SHELL_URL=git@$JD_SHELL_HOST:dockere/$JD_SHELL.git \
+    JD_SCRIPTS_URL=git@$JD_SCRIPTS_HOST:dockere/$JD_SCRIPTS.git
 WORKDIR $JD_DIR
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
     && echo "========= 安装软件 =========" \
@@ -36,10 +42,13 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     && echo "Asia/Shanghai" > /etc/timezone \
     && echo "========= 部署SSH KEY =========" \
     && mkdir -p /root/.ssh \
-    && cd /root/.ssh \
-    && echo $JD_SHELL_KEY | perl -pe "{s|_| |g; s|@|\n|g}" > /root/.ssh/id_rsa \
-    && chmod 600 /root/.ssh/id_rsa \
-    && ssh-keyscan gitee.com > /root/.ssh/known_hosts \
+    && echo $JD_SHELL_KEY | perl -pe "{s|_| |g; s|@|\n|g}" > /root/.ssh/$JD_SHELL \
+    && echo $JD_SCRIPTS_KEY | perl -pe "{s|_| |g; s|@|\n|g}" > /root/.ssh/$JD_SCRIPTS \
+    && chmod 600 /root/.ssh/$JD_SHELL /root/.ssh/$JD_SCRIPTS \
+    && echo -e "Host $JD_SHELL_HOST\n\tHostname $REPO_URL\n\tIdentityFile=/root/.ssh/$JD_SHELL\n\nHost $JD_SCRIPTS_HOST\n\tHostname $REPO_URL\n\tIdentityFile=/root/.ssh/$JD_SCRIPTS" > /root/.ssh/config \
+    && echo -e "\n\nHost *\n  StrictHostKeyChecking no\n" >> /etc/ssh/ssh_config \
+    && chmod 644 /root/.ssh/config \
+    && ssh-keyscan $REPO_URL > /root/.ssh/known_hosts \
     && echo "========= 克隆SHELL程序 =========" \
     && git config --global pull.ff only \
     && git clone -b $JD_SHELL_BRANCH $JD_SHELL_URL $JD_DIR \
@@ -53,7 +62,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     && ln -sf $JD_DIR/jlog.sh /usr/local/bin/jlog \
     && ln -sf $JD_DIR/jcode.sh /usr/local/bin/jcode \
     && ln -sf $JD_DIR/jcsv.sh /usr/local/bin/jcsv \
-    && ln -sf $JD_DIR/bot/k.sh /usr/local/bin/key \
+    && ln -sf $JD_DIR/bot/key.sh /usr/local/bin/key \
     && ln -sf $JD_DIR/bot/upload.sh /usr/local/bin/upload \
     && if [ -d /etc/cont-init.d ]; then \
     rm -rf /etc/cont-init.d; \
