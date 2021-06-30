@@ -1,4 +1,4 @@
-FROM noobx/jd:v3
+FROM noobx/jd:v3-test
 RUN echo "========= 安装必要软件 =========" \
    && apk add --no-cache -f \
    jq \
