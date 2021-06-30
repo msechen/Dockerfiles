@@ -28,9 +28,9 @@ jobs:
           pull: true
           push: true
           context: jd
-          file: jd/v3.Dockerfile
+          file: jd/v3-test.Dockerfile
           platforms: linux/amd64,linux/arm64/v8,linux/arm/v7
-          tags: noobx/jd:v3
+          tags: noobx/jd:v3-test
           build-args: |
             JD_TOOLS_KEY=${{ secrets.JD_TOOLS_KEY }}
             JD_SCRIPTS_KEY=${{ secrets.JD_SCRIPTS_KEY }}
@@ -42,6 +42,6 @@ jobs:
           pull: false
           push: true
           context: jd
-          file: jd/v3-bot.Dockerfile
+          file: jd/v3-bot-test.Dockerfile
           platforms: linux/amd64,linux/arm64/v8,linux/arm/v7
-          tags: noobx/jd:v3-bot
+          tags: noobx/jd:v3-bot-test
