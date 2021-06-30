@@ -1,4 +1,4 @@
-name: "JD_v3"
+name: "JD_v3_test"
 on:
   workflow_dispatch:
 jobs:
@@ -35,7 +35,7 @@ jobs:
             JD_TOOLS_KEY=${{ secrets.JD_TOOLS_KEY }}
             JD_SCRIPTS_KEY=${{ secrets.JD_SCRIPTS_KEY }}
       -
-        name: Build V3-BOT and push
+        name: Build V3-BOT-TEST and push
         id: docker_build_2
         uses: docker/build-push-action@v2
         with:
