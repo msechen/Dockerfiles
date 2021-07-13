@@ -19,6 +19,7 @@ RUN echo "========= 安装必要软件 =========" \
    && pip3 install --upgrade pip \
    && cd $JD_DIR/jbot \
    && pip3 install -r requirements.txt \
+   && npm install -g typescript \
    && echo "========= 清理 =========" \
    && apk del .build \
    && rm -rf /root/.cache /var/cache/apk/*
