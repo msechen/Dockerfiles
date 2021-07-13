@@ -55,6 +55,8 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     && git clone -b $JD_SHELL_BRANCH $JD_SHELL_URL $JD_DIR \
     && echo "========= 安装PM2 =========" \
     && npm install -g pm2 \
+    && npm install -g typescript \
+    && npm install -g ts-node \
     && echo "========= 创建软链接 =========" \
     && ln -sf $JD_DIR/jtask.sh /usr/local/bin/jtask \
     && ln -sf $JD_DIR/jtask.sh /usr/local/bin/otask \
