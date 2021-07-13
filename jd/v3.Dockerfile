@@ -56,6 +56,8 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     && cd $JD_DIR/scripts \
     && npm install \
     && npm install -g pm2 \
+    && npm install -g typescript \
+    && npm install -g ts-node \
     && echo "========= 创建软链接 =========" \
     && ln -sf $JD_DIR/jd.sh /usr/local/bin/jd \
     && ln -sf $JD_DIR/git_pull.sh /usr/local/bin/git_pull \
