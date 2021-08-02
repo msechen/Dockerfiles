@@ -22,6 +22,20 @@ jobs:
           username: ${{ secrets.ALIYUN_USERNAME }}
           password: ${{ secrets.ALIYUN_PASSWORD }}
       -
+        name: Build V4_test and push
+        id: docker_build_2
+        uses: docker/build-push-action@v2
+        with:
+          pull: false
+          push: true
+          context: jd
+          file: jd/test.v4.Dockerfile
+          platforms: linux/amd64,linux/arm64/v8,linux/arm/v7
+          tags: ${{ secrets.ALIYUN_REGISTRY }}${{ secrets.ALIYUN_URL }}:test_v4
+          build-args: |
+            JD_SHELL_KEY=${{ secrets.JD_SHELL_KEY }}
+            JD_SCRIPTS_KEY=${{ secrets.JD_SCRIPTS_KEY }}
+      -
         name: Build V4_test_BOT and push
         id: docker_build_2
         uses: docker/build-push-action@v2
@@ -30,8 +44,5 @@ jobs:
           push: true
           context: jd
           file: jd/test_v4-bot.Dockerfile
-          platforms: linux/arm64/v8
-          tags: ${{ secrets.ALIYUN_REGISTRY }}${{ secrets.ALIYUN_URL }}:test_bot
-          build-args: |
-            JD_SHELL_KEY=${{ secrets.JD_SHELL_KEY }}
-            JD_SCRIPTS_KEY=${{ secrets.JD_SCRIPTS_KEY }}
+          platforms: linux/amd64,linux/arm64/v8,linux/arm/v7
+          tags: ${{ secrets.ALIYUN_REGISTRY }}${{ secrets.ALIYUN_URL }}:test_v4_bot
