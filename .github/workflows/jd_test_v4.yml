@@ -23,7 +23,7 @@ jobs:
           password: ${{ secrets.ALIYUN_PASSWORD }}
       -
         name: Build V4_test and push
-        id: docker_build_2
+        id: docker_build_1
         uses: docker/build-push-action@v2
         with:
           pull: false
