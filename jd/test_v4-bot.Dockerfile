@@ -20,8 +20,7 @@ RUN echo "========= 安装必要软件 =========" \
    && pip3 install --upgrade pip \
    && cd $JD_DIR/jbot \
    && pip3 install -r requirements.txt \
-   && cd $JD_DIR/scripts \
-   && npm install canvas@2.8.0 \
+   && npm install -g typescript \
    && echo "========= 清理 =========" \
    && apk del .build \
    && rm -rf /root/.cache /var/cache/apk/*
